@@ -329,6 +329,7 @@ typedef enum {
  @param operation The HTTP request operation to be enqueued.
  */
 - (void)enqueueHTTPRequestOperation:(AFHTTPRequestOperation *)operation;
+- (void)enqueueHTTPRequestOperationAndWait:(AFHTTPRequestOperation *)operation;
 
 /**
  Cancels all operations in the HTTP client's operation queue whose URLs match the specified HTTP method and path.

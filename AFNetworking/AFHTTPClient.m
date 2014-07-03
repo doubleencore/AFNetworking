@@ -577,6 +577,10 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
     [self.operationQueue addOperation:operation];
 }
 
+- (void)enqueueHTTPRequestOperationAndWait:(AFHTTPRequestOperation *)operation {
+    [self.operationQueue addOperations:@[operation] waitUntilFinished:YES];
+}
+
 - (void)cancelAllHTTPOperationsWithMethod:(NSString *)method
                                      path:(NSString *)path
 {
