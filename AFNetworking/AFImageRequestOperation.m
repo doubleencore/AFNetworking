@@ -22,6 +22,10 @@
 
 #import "AFImageRequestOperation.h"
 
+
+#define MAX_IMAGE_SCREEN_SIZE_SCALE 6.0f
+
+
 static dispatch_queue_t image_request_operation_processing_queue() {
     static dispatch_queue_t af_image_request_operation_processing_queue;
     static dispatch_once_t onceToken;
@@ -73,6 +77,21 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
 
     size_t width = CGImageGetWidth(imageRef);
     size_t height = CGImageGetHeight(imageRef);
+    
+    CGSize screenSize = [[UIScreen mainScreen] bounds].size;
+    BOOL isImageTooLarge = (width * height) > (MAX_IMAGE_SCREEN_SIZE_SCALE * screenSize.width * screenSize.height * scale);
+    if  (isImageTooLarge) {
+        CGFloat aspectRatio = ((CGFloat)width / (CGFloat)height);
+        if (width > height) {
+            width = screenSize.width * MAX_IMAGE_SCREEN_SIZE_SCALE;
+            height = (1 / aspectRatio) * width;
+        }
+        else {
+            height = screenSize.height * MAX_IMAGE_SCREEN_SIZE_SCALE;
+            width = (aspectRatio) * height;
+        }
+    }
+    
     size_t bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
     size_t bytesPerRow = 0; // CGImageGetBytesPerRow() calculates incorrectly in iOS 5.0, so defer to CGBitmapContextCreate()
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
