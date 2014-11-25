@@ -23,7 +23,7 @@
 #import "AFImageRequestOperation.h"
 
 
-#define MAX_IMAGE_SCREEN_SIZE_SCALE 6.0f
+#define MAX_IMAGE_SCREEN_SIZE_SCALE 2.0f
 
 
 static dispatch_queue_t image_request_operation_processing_queue() {
@@ -78,16 +78,24 @@ static UIImage * AFInflatedImageFromResponseWithDataAtScale(NSHTTPURLResponse *r
     size_t width = CGImageGetWidth(imageRef);
     size_t height = CGImageGetHeight(imageRef);
     
+    CGFloat maxSizeScale = 0;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        maxSizeScale = MAX_IMAGE_SCREEN_SIZE_SCALE / 2.0f;
+    }
+    else {
+        maxSizeScale = MAX_IMAGE_SCREEN_SIZE_SCALE;
+    }
+        
     CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-    BOOL isImageTooLarge = (width * height) > (MAX_IMAGE_SCREEN_SIZE_SCALE * screenSize.width * screenSize.height * scale);
+    BOOL isImageTooLarge = (width * height) > (maxSizeScale * screenSize.width * screenSize.height * scale);
     if  (isImageTooLarge) {
         CGFloat aspectRatio = ((CGFloat)width / (CGFloat)height);
         if (width > height) {
-            width = screenSize.width * MAX_IMAGE_SCREEN_SIZE_SCALE;
+            width = screenSize.width * maxSizeScale;
             height = (1 / aspectRatio) * width;
         }
         else {
-            height = screenSize.height * MAX_IMAGE_SCREEN_SIZE_SCALE;
+            height = screenSize.height * maxSizeScale;
             width = (aspectRatio) * height;
         }
     }
